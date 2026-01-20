@@ -1,0 +1,483 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>Untitled6</title>
+<meta name="generator" content="MATLAB 25.2">
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/">
+<meta name="DC.date" content="2026-01-20">
+<meta name="DC.source" content="Untitled6.m">
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body>
+<div class="content">
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#2">--- Given Data &amp; Constants ---</a>
+</li>
+<li>
+<a href="#3">--- Preprocessing Calculations ---</a>
+</li>
+<li>
+<a href="#4">--- Phase 1: Iterative Solver ---</a>
+</li>
+<li>
+<a href="#6">--- Phase 2: Performance Metrics ---</a>
+</li>
+<li>
+<a href="#8">--- Results Table ---</a>
+</li>
+<li>
+<a href="#9">--- Phase 3: Visualization ---</a>
+</li>
+</ul>
+</div>
+<pre class="codeinput">
+<span class="comment">% Project Assignment 4: Trim, Thrust, and Power Analysis</span>
+<span class="comment">% UAV Configuration: Cropped Delta Wing</span>
+
+clear; clc;close <span class="string">all</span>;
+</pre>
+<h2 id="2">--- Given Data &amp; Constants ---</h2>
+<pre class="codeinput">m = 3.5;            <span class="comment">% UAV Mass (kg)</span>
+g = 10;             <span class="comment">% Gravity (m/s^2)</span>
+rho = 1.225;        <span class="comment">% Air density (kg/m^3)</span>
+W = m * g;          <span class="comment">% Weight (N)</span>
+
+<span class="comment">% Geometry</span>
+Cr = 0.9;           <span class="comment">% Root chord (m)</span>
+Ct = 0.15;          <span class="comment">% Tip chord (m)</span>
+b = 1.5;            <span class="comment">% Span (m)</span>
+e = 0.89;           <span class="comment">% Oswald efficiency factor</span>
+
+<span class="comment">% Aerodynamic Coefficients</span>
+CD0 = 0.03;
+Cm0 = 0.01;
+CLa = 2.92;         <span class="comment">% per rad</span>
+CLde = 0.265;       <span class="comment">% CL_delta_e</span>
+Cma = -0.292;       <span class="comment">% Cm_alpha</span>
+Cmde = -0.4;        <span class="comment">% Cm_delta_e</span>
+</pre>
+<h2 id="3">--- Preprocessing Calculations ---</h2>
+<pre class="codeinput">lambda = Ct / Cr;               <span class="comment">% Taper Ratio</span>
+S = (b/2) * Cr * (1 + lambda);  <span class="comment">% Planform Area (m^2)</span>
+AR = b^2 / S;                   <span class="comment">% Aspect Ratio</span>
+k = 1 / (pi * e * AR);          <span class="comment">% Induced Drag Correction Factor</span>
+</pre>
+<h2 id="4">--- Phase 1: Iterative Solver ---</h2>
+<p>Define Angle of Attack range (0 to 12 degrees in steps of 0.5)</p>
+<pre class="codeinput">alpha_deg = 0:0.5:12;
+alpha_rad = deg2rad(alpha_deg); <span class="comment">% Convert to radians for calculations</span>
+
+<span class="comment">% Pre-allocate arrays for efficiency</span>
+de_trim = zeros(size(alpha_rad));
+CL_trim = zeros(size(alpha_rad));
+V_trim  = zeros(size(alpha_rad));
+CD      = zeros(size(alpha_rad));
+Tr      = zeros(size(alpha_rad));
+Pr      = zeros(size(alpha_rad));
+LD_ratio = zeros(size(alpha_rad));
+CL32_CD  = zeros(size(alpha_rad));
+
+<span class="keyword">for</span> i = 1:length(alpha_rad)
+</pre>
+<pre class="codeinput">    a = alpha_rad(i);
+
+    <span class="comment">% 1. Compute Trim Elevator Deflection (de)</span>
+    <span class="comment">% From Cm = Cm0 + Cma*a + Cmde*de = 0</span>
+    de_trim(i) = -(Cm0 + Cma * a) / Cmde;
+
+    <span class="comment">% 2. Compute Trim Lift Coefficient (CL)</span>
+    CL_trim(i) = CLa * a + CLde * de_trim(i);
+
+    <span class="comment">% 3. Determine Flight Velocity (V)</span>
+    <span class="comment">% From L = W = 0.5 * rho * V^2 * S * CL</span>
+    <span class="keyword">if</span> CL_trim(i) &gt; 0
+        V_trim(i) = sqrt((2 * W) / (rho * S * CL_trim(i)));
+    <span class="keyword">else</span>
+        V_trim(i) = NaN; <span class="comment">% Avoid division by zero/negative lift</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">% 4. Compute Drag Coefficient (CD)</span>
+    CD(i) = CD0 + k * CL_trim(i)^2;
+
+    <span class="comment">% 5. Calculate Thrust Required (Tr = Drag)</span>
+    Tr(i) = 0.5 * rho * V_trim(i)^2 * S * CD(i);
+
+    <span class="comment">% 6. Calculate Power Required (Pr = Tr * V)</span>
+    Pr(i) = Tr(i) * V_trim(i);
+</pre>
+<h2 id="6">--- Phase 2: Performance Metrics ---</h2>
+<pre class="codeinput">    LD_ratio(i) = CL_trim(i) / CD(i);
+    CL32_CD(i) = (CL_trim(i)^(1.5)) / CD(i);
+</pre>
+<pre class="codeinput">
+<span class="keyword">end</span>
+</pre>
+<h2 id="8">--- Results Table ---</h2>
+<p>Combine results into a table for viewing</p>
+<pre class="codeinput">ResultsTable = table(alpha_deg', V_trim', rad2deg(de_trim)', CL_trim', CD', Tr', Pr', <span class="keyword">...</span>
+    <span class="string">'VariableNames'</span>, {<span class="string">'Alpha_deg'</span>, <span class="string">'Velocity_ms'</span>, <span class="string">'Elevator_deg'</span>, <span class="string">'CL'</span>, <span class="string">'CD'</span>, <span class="string">'ThrustReq_N'</span>, <span class="string">'PowerReq_W'</span>});
+
+<span class="comment">% Display the first 10 rows to the command window</span>
+disp(<span class="string">'--- Summary of Trim and Performance Data ---'</span>);
+disp(head(ResultsTable, 25));
+</pre>
+<pre class="codeoutput">--- Summary of Trim and Performance Data ---
+    Alpha_deg    Velocity_ms    Elevator_deg       CL          CD       ThrustReq_N    PowerReq_W
+    _________    ___________    ____________    ________    ________    ___________    __________
+
+         0         104.66           1.4324      0.006625    0.030005      158.52          16590  
+       0.5         48.841           1.0674      0.030419    0.030116      34.652         1692.4  
+         1         36.585          0.70239      0.054212    0.030368      19.606         717.29  
+       1.5         30.499          0.33739      0.078006    0.030762      13.802         420.96  
+         2         26.698        -0.027606        0.1018    0.031297       10.76         287.28  
+       2.5         24.037         -0.39261       0.12559    0.031975      8.9106         214.18  
+         3         22.039         -0.75761       0.14939    0.032794      7.6832         169.33  
+       3.5         20.469          -1.1226       0.17318    0.033754      6.8218         139.64  
+         4         19.193          -1.4876       0.19697    0.034857      6.1936         118.88  
+       4.5          18.13          -1.8526       0.22077    0.036101      5.7234         103.76  
+         5         17.225          -2.2176       0.24456    0.037487      5.3649         92.411  
+       5.5         16.444          -2.5826       0.26836    0.039015      5.0885         83.673  
+         6          15.76          -2.9476       0.29215    0.040684       4.874         76.814  
+       6.5         15.155          -3.3126       0.31594    0.042495      4.7076         71.343  
+         7         14.615          -3.6776       0.33974    0.044448      4.5791         66.921  
+       7.5         14.128          -4.0426       0.36353    0.046543      4.4811         63.309  
+         8         13.687          -4.4076       0.38732    0.048779      4.4079         60.332  
+       8.5         13.285          -4.7726       0.41112    0.051157      4.3552         57.861  
+         9         12.917          -5.1376       0.43491    0.053677      4.3197         55.797  
+       9.5         12.577          -5.5026        0.4587    0.056339      4.2987         54.067  
+        10         12.263          -5.8676        0.4825    0.059142      4.2901         52.611  
+      10.5         11.972          -6.2326       0.50629    0.062087      4.2921         51.383  
+        11           11.7          -6.5976       0.53009    0.065174      4.3032         50.348  
+      11.5         11.446          -6.9626       0.55388    0.068402      4.3224         49.473  
+        12         11.208          -7.3276       0.57767    0.071773      4.3486         48.737  
+
+</pre>
+<h2 id="9">--- Phase 3: Visualization ---</h2>
+<pre class="codeinput">figure(<span class="string">'Name'</span>, <span class="string">'UAV Performance Analysis'</span>);
+
+<span class="comment">% 1. Trim Angle of Attack vs Velocity</span>
+<span class="comment">% This shows the alpha required to maintain level flight at a given speed</span>
+subplot(4,2,1);
+plot(V_trim, alpha_deg, <span class="string">'b'</span>, <span class="string">'LineWidth'</span>, 2);
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Velocity (m/s)'</span>);
+ylabel(<span class="string">'Trim \alpha (deg)'</span>);
+title(<span class="string">'Trim Angle of Attack vs Velocity'</span>);
+
+<span class="comment">% 2. Trim Elevator Deflection vs Velocity</span>
+subplot(4,2,2);
+plot(V_trim, rad2deg(de_trim), <span class="string">'LineWidth'</span>, 1.5);
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Velocity (m/s)'</span>);
+ylabel(<span class="string">'\delta_{e,trim} (deg)'</span>);
+title(<span class="string">'Trim Elevator Deflection'</span>);
+
+<span class="comment">% 3. Lift Coefficient vs Velocity</span>
+subplot(4,2,3);
+plot(V_trim, CL_trim, <span class="string">'LineWidth'</span>, 1.5);
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Velocity (m/s)'</span>);
+ylabel(<span class="string">'C_L'</span>);
+title(<span class="string">'Lift Coefficient'</span>);
+
+<span class="comment">% 4. Drag Coefficient vs Velocity</span>
+subplot(4,2,4);
+plot(V_trim, CD, <span class="string">'LineWidth'</span>, 1.5);
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Velocity (m/s)'</span>);
+ylabel(<span class="string">'C_D'</span>);
+title(<span class="string">'Drag Coefficient'</span>);
+
+<span class="comment">% 5. Thrust Required vs Velocity</span>
+subplot(4,2,5);
+plot(V_trim, Tr, <span class="string">'r'</span>, <span class="string">'LineWidth'</span>, 1.5);
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Velocity (m/s)'</span>);
+ylabel(<span class="string">'Thrust Required (N)'</span>);
+title(<span class="string">'Thrust Required (Drag)'</span>);
+
+<span class="comment">% 6. Power Required vs Velocity</span>
+subplot(4,2,6);
+plot(V_trim, Pr, <span class="string">'g'</span>, <span class="string">'LineWidth'</span>, 1.5);
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Velocity (m/s)'</span>);
+ylabel(<span class="string">'Power Required (W)'</span>);
+title(<span class="string">'Power Required'</span>);
+
+<span class="comment">% 7. Efficiency Metrics (L/D)</span>
+subplot(4,2,7);
+plot(V_trim, LD_ratio, <span class="string">'k'</span>, <span class="string">'LineWidth'</span>, 1.5);
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Velocity (m/s)'</span>);
+ylabel(<span class="string">'C_L / C_D'</span>);
+title(<span class="string">'Aerodynamic Efficiency (L/D)'</span>);
+
+<span class="comment">% 8. Power Factor (Endurance Metric) vs Velocity</span>
+<span class="comment">% The peak of this curve represents the maximum endurance speed</span>
+subplot(4,2,8);
+plot(V_trim, CL32_CD, <span class="string">'m'</span>, <span class="string">'LineWidth'</span>, 2);
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Velocity (m/s)'</span>);
+ylabel(<span class="string">'C_L^{3/2} / C_D'</span>);
+title(<span class="string">'Endurance Metric (C_L^{1.5} / C_D)'</span>);
+
+
+<span class="comment">% Find minimums and maximums</span>
+[min_thrust, idx_T] = min(Tr);
+[min_power, idx_P] = min(Pr);
+[max_endurance_val, idx_E] = max(CL32_CD);
+
+fprintf(<span class="string">'Minimum Thrust Required: %.2f N at %.2f m/s\n'</span>, min_thrust, V_trim(idx_T));
+fprintf(<span class="string">'Minimum Power Required: %.2f W at %.2f m/s\n'</span>, min_power, V_trim(idx_P));
+fprintf(<span class="string">'Best Endurance occurs at %.2f m/s with alpha = %.2f deg\n'</span>, V_trim(idx_E), alpha_deg(idx_E));
+</pre>
+<pre class="codeoutput">Minimum Thrust Required: 4.29 N at 12.26 m/s
+Minimum Power Required: 48.74 W at 11.21 m/s
+Best Endurance occurs at 11.21 m/s with alpha = 12.00 deg
+</pre>
+<img vspace="5" hspace="5" src="Untitled6_01.png" alt=""> <p class="footer">
+<br>
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2025b</a>
+<br>
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+% Project Assignment 4: Trim, Thrust, and Power Analysis
+% UAV Configuration: Cropped Delta Wing
+
+clear; clc;close all;
+
+%% REPLACE_WITH_DASH_DASH- Given Data & Constants REPLACE_WITH_DASH_DASH-
+m = 3.5;            % UAV Mass (kg)
+g = 10;             % Gravity (m/s^2)
+rho = 1.225;        % Air density (kg/m^3)
+W = m * g;          % Weight (N)
+
+% Geometry
+Cr = 0.9;           % Root chord (m)
+Ct = 0.15;          % Tip chord (m)
+b = 1.5;            % Span (m)
+e = 0.89;           % Oswald efficiency factor
+
+% Aerodynamic Coefficients
+CD0 = 0.03;
+Cm0 = 0.01;
+CLa = 2.92;         % per rad
+CLde = 0.265;       % CL_delta_e
+Cma = -0.292;       % Cm_alpha
+Cmde = -0.4;        % Cm_delta_e
+
+%% REPLACE_WITH_DASH_DASH- Preprocessing Calculations REPLACE_WITH_DASH_DASH-
+lambda = Ct / Cr;               % Taper Ratio
+S = (b/2) * Cr * (1 + lambda);  % Planform Area (m^2)
+AR = b^2 / S;                   % Aspect Ratio
+k = 1 / (pi * e * AR);          % Induced Drag Correction Factor
+
+%% REPLACE_WITH_DASH_DASH- Phase 1: Iterative Solver REPLACE_WITH_DASH_DASH-
+% Define Angle of Attack range (0 to 12 degrees in steps of 0.5)
+alpha_deg = 0:0.5:12;
+alpha_rad = deg2rad(alpha_deg); % Convert to radians for calculations
+
+% Pre-allocate arrays for efficiency
+de_trim = zeros(size(alpha_rad));
+CL_trim = zeros(size(alpha_rad));
+V_trim  = zeros(size(alpha_rad));
+CD      = zeros(size(alpha_rad));
+Tr      = zeros(size(alpha_rad));
+Pr      = zeros(size(alpha_rad));
+LD_ratio = zeros(size(alpha_rad));
+CL32_CD  = zeros(size(alpha_rad));
+
+for i = 1:length(alpha_rad)
+    a = alpha_rad(i);
+    
+    % 1. Compute Trim Elevator Deflection (de)
+    % From Cm = Cm0 + Cma*a + Cmde*de = 0
+    de_trim(i) = -(Cm0 + Cma * a) / Cmde;
+    
+    % 2. Compute Trim Lift Coefficient (CL)
+    CL_trim(i) = CLa * a + CLde * de_trim(i);
+    
+    % 3. Determine Flight Velocity (V)
+    % From L = W = 0.5 * rho * V^2 * S * CL
+    if CL_trim(i) > 0
+        V_trim(i) = sqrt((2 * W) / (rho * S * CL_trim(i)));
+    else
+        V_trim(i) = NaN; % Avoid division by zero/negative lift
+    end
+    
+    % 4. Compute Drag Coefficient (CD)
+    CD(i) = CD0 + k * CL_trim(i)^2;
+    
+    % 5. Calculate Thrust Required (Tr = Drag)
+    Tr(i) = 0.5 * rho * V_trim(i)^2 * S * CD(i);
+    
+    % 6. Calculate Power Required (Pr = Tr * V)
+    Pr(i) = Tr(i) * V_trim(i);
+    
+    %% REPLACE_WITH_DASH_DASH- Phase 2: Performance Metrics REPLACE_WITH_DASH_DASH-
+    LD_ratio(i) = CL_trim(i) / CD(i);
+    CL32_CD(i) = (CL_trim(i)^(1.5)) / CD(i);
+end
+%% REPLACE_WITH_DASH_DASH- Results Table REPLACE_WITH_DASH_DASH-
+% Combine results into a table for viewing
+ResultsTable = table(alpha_deg', V_trim', rad2deg(de_trim)', CL_trim', CD', Tr', Pr', ...
+    'VariableNames', {'Alpha_deg', 'Velocity_ms', 'Elevator_deg', 'CL', 'CD', 'ThrustReq_N', 'PowerReq_W'});
+
+% Display the first 10 rows to the command window
+disp('REPLACE_WITH_DASH_DASH- Summary of Trim and Performance Data REPLACE_WITH_DASH_DASH-');
+disp(head(ResultsTable, 25));
+
+%% REPLACE_WITH_DASH_DASH- Phase 3: Visualization REPLACE_WITH_DASH_DASH-
+
+figure('Name', 'UAV Performance Analysis');
+
+% 1. Trim Angle of Attack vs Velocity
+% This shows the alpha required to maintain level flight at a given speed
+subplot(4,2,1);
+plot(V_trim, alpha_deg, 'b', 'LineWidth', 2);
+grid on; 
+xlabel('Velocity (m/s)'); 
+ylabel('Trim \alpha (deg)');
+title('Trim Angle of Attack vs Velocity');
+
+% 2. Trim Elevator Deflection vs Velocity
+subplot(4,2,2);
+plot(V_trim, rad2deg(de_trim), 'LineWidth', 1.5);
+grid on; 
+xlabel('Velocity (m/s)'); 
+ylabel('\delta_{e,trim} (deg)');
+title('Trim Elevator Deflection');
+
+% 3. Lift Coefficient vs Velocity
+subplot(4,2,3);
+plot(V_trim, CL_trim, 'LineWidth', 1.5);
+grid on; 
+xlabel('Velocity (m/s)'); 
+ylabel('C_L');
+title('Lift Coefficient');
+
+% 4. Drag Coefficient vs Velocity
+subplot(4,2,4);
+plot(V_trim, CD, 'LineWidth', 1.5);
+grid on; 
+xlabel('Velocity (m/s)'); 
+ylabel('C_D');
+title('Drag Coefficient');
+
+% 5. Thrust Required vs Velocity
+subplot(4,2,5);
+plot(V_trim, Tr, 'r', 'LineWidth', 1.5);
+grid on; 
+xlabel('Velocity (m/s)'); 
+ylabel('Thrust Required (N)');
+title('Thrust Required (Drag)');
+
+% 6. Power Required vs Velocity
+subplot(4,2,6);
+plot(V_trim, Pr, 'g', 'LineWidth', 1.5);
+grid on; 
+xlabel('Velocity (m/s)'); 
+ylabel('Power Required (W)');
+title('Power Required');
+
+% 7. Efficiency Metrics (L/D)
+subplot(4,2,7);
+plot(V_trim, LD_ratio, 'k', 'LineWidth', 1.5);
+grid on; 
+xlabel('Velocity (m/s)'); 
+ylabel('C_L / C_D');
+title('Aerodynamic Efficiency (L/D)');
+
+% 8. Power Factor (Endurance Metric) vs Velocity
+% The peak of this curve represents the maximum endurance speed
+subplot(4,2,8);
+plot(V_trim, CL32_CD, 'm', 'LineWidth', 2);
+grid on; 
+xlabel('Velocity (m/s)'); 
+ylabel('C_L^{3/2} / C_D');
+title('Endurance Metric (C_L^{1.5} / C_D)');
+
+
+% Find minimums and maximums
+[min_thrust, idx_T] = min(Tr);
+[min_power, idx_P] = min(Pr);
+[max_endurance_val, idx_E] = max(CL32_CD);
+
+fprintf('Minimum Thrust Required: %.2f N at %.2f m/s\n', min_thrust, V_trim(idx_T));
+fprintf('Minimum Power Required: %.2f W at %.2f m/s\n', min_power, V_trim(idx_P));
+fprintf('Best Endurance occurs at %.2f m/s with alpha = %.2f deg\n', V_trim(idx_E), alpha_deg(idx_E));
+##### SOURCE END #####
+-->
+</body>
+</html>
